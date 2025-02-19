@@ -79,3 +79,37 @@ func GetEventByID(id int64) (*Event, error) {
 	}
 	return &event, nil
 }
+
+func (e Event) Update() error {
+	query := "UPDATE events SET name=?, description=?, location=?, dateTime=? WHERE id=?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println("Error preparing update statement:", err)
+		return err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Println("Error closing statement:", err)
+		}
+	}(stmt)
+	_, err = stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.ID)
+	return err
+}
+
+func (e Event) Delete() error {
+	query := "DELETE FROM events WHERE id=?"
+	smtp, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println("Error preparing delete statement:", err)
+		return err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Println("Error closing statement:", err)
+		}
+	}(smtp)
+	_, err = smtp.Exec(e.ID)
+	return err
+}
