@@ -24,7 +24,7 @@ func (user *User) Save() error {
 
 func (user *User) Authenticate() error {
 	var hashedPassword string
-	err := db.DB.QueryRow("SELECT password FROM users WHERE email = ?", user.Email).Scan(&hashedPassword)
+	err := db.DB.QueryRow("SELECT id, password FROM users WHERE email = ?", user.Email).Scan(&user.ID, &hashedPassword)
 	if err != nil {
 		return errors.New("user not found")
 	}
