@@ -129,5 +129,21 @@ func (e Event) Register(userId int64) error {
 	}(stmt)
 	_, err = stmt.Exec(e.ID, userId)
 	return err
+}
 
+func (e Event) CancelRegistration(userId int64) error {
+	query := "DELETE FROM registrations WHERE event_id=? AND user_id=?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println("Error preparing registration statement:", err)
+		return err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Println("Error closing statement:", err)
+		}
+	}(stmt)
+	_, err = stmt.Exec(e.ID, userId)
+	return err
 }
