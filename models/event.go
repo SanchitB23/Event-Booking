@@ -113,3 +113,21 @@ func (e Event) Delete() error {
 	_, err = smtp.Exec(e.ID)
 	return err
 }
+
+func (e Event) Register(userId int64) error {
+	query := "INSERT INTO registrations(event_id, user_id) VALUES(?, ?)"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		fmt.Println("Error preparing registration statement:", err)
+		return err
+	}
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Println("Error closing statement:", err)
+		}
+	}(stmt)
+	_, err = stmt.Exec(e.ID, userId)
+	return err
+
+}
