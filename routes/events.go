@@ -15,7 +15,12 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	err := utils.VerifyJWT(token)
+	userId, err := utils.VerifyJWT(token)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
+		return
+	}
 
 	var event models.Event
 	err = context.ShouldBindJSON(&event)
@@ -23,8 +28,7 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Invalid request body"})
 		return
 	}
-	event.ID = 1
-	event.UserID = 1
+	event.UserID = userId
 	err = event.Save()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "message": "Failed to save event"})
